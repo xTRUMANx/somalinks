@@ -1,0 +1,32 @@
+{
+  "name": "somalinks",
+  "version": "0.0.0",
+  "description": "Link aggregator for Somali websites.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mustafa Saeed Haji Ali",
+  "license": "ISC",
+  "dependencies": {
+    "react-async": "~0.9.2",
+    "express": "~4.3.1",
+    "superagent": "~0.18.0",
+    "envify": "~1.2.1",
+    "react": "~0.10.0",
+    "react-router-component": "~0.18.3",
+    "fibers": "~1.0.1",
+    "compression": "~1.0.2",
+    "body-parser": "~1.2.0",
+    "morgan": "~1.1.1",
+    "serve-favicon": "~2.0.0"
+  },
+  "devDependencies": {
+    "gulp": "~3.6.2",
+    "gulp-browserify": "~0.5.0",
+    "gulp-rename": "~1.2.0",
+    "gulp-uglify": "~0.3.0",
+    "reactify": "~0.13.1",
+    "gulp-react": "~0.3.3"
+  }
+}
