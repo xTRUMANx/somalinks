@@ -1,18 +1,10 @@
 /** @jsx React.DOM */
 
-var React = require("react");
-var Router = require("react-router-component");
-
-var Locations = Router.Locations;
-var Location = Router.Location;
-
-var HomePage = React.createClass({
-  render: function(){
-    return (
-      <h1 className="text-center">somalinks</h1>
-    );
-  }
-});
+var React = require("react"),
+  HomePage = require("./HomePage"),
+  Router = require("react-router-component"),
+  Locations = Router.Locations,
+  Location = Router.Location;
 
 var App = React.createClass({
   render: function(){
@@ -23,9 +15,12 @@ var App = React.createClass({
           <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
         </head>
         <body>
-          <Locations path={this.props.path}>
-            <Location path="/" handler={HomePage} />
-          </Locations>
+          <h1 className="text-center">somalinks</h1>
+          <div className="container">
+            <Locations path={this.props.path}>
+              <Location path="/" handler={HomePage} apiEndpoints={this.props.apiEndpoints} />
+            </Locations>
+          </div>
           <script src="/js/bundle.js"></script>
         </body>
       </html>
