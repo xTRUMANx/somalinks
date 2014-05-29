@@ -6,7 +6,8 @@ var apiEndpoints = {
 
 var config = {
   connectionString: "postgres://mustafa:mustafacrudgen@localhost/somalinks",
-  apiEndPoints: apiEndpoints
+  apiEndPoints: apiEndpoints,
+  newLinkCheckIntervalSeconds: 30000
 };
 
 module.exports = config;

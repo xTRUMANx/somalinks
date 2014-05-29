@@ -4,9 +4,13 @@ var React = require("react"),
   HomePage = require("./HomePage"),
   Router = require("react-router-component"),
   Locations = Router.Locations,
-  Location = Router.Location;
+  Location = Router.Location,
+  ioClient = require("socket.io-client");
 
 var App = React.createClass({
+  getInitialState: function(){
+    return {socket: ioClient.connect("/")};
+  },
   render: function(){
     return (
       <html>
@@ -18,7 +22,7 @@ var App = React.createClass({
           <h1 className="text-center">somalinks</h1>
           <div className="container">
             <Locations path={this.props.path}>
-              <Location path="/" handler={HomePage} apiEndpoints={this.props.apiEndpoints} />
+              <Location path="/" handler={HomePage} apiEndpoints={this.props.apiEndpoints} socket={this.state.socket} />
             </Locations>
           </div>
           <script src="/js/bundle.js"></script>

@@ -6,7 +6,8 @@ var express = require("express"),
   path = require("path"),
   favicon = require("serve-favicon"),
   API = require("./api"),
-  Config = require("./config");
+  Config = require("./config"),
+  DB = require("./db");
 
 var app = express();
 
@@ -55,3 +56,57 @@ app.set("port", process.env.PORT || 3000);
 var server = app.listen(app.get("port"), function(){
   console.log("Express server is listening on port " + server.address().port);
 });
+
+var IO = require("socket.io").listen(server);
+
+IO.sockets.on("connection", function(socket){
+  socket.on("newPostsSince", function(id){
+    console.log("newPostsSince", id);
+    emitLatestPosts(function(eventName, data){
+      console.log("emitting new posts", data.map(function(post){return post.id}));
+      socket.emit(eventName, data);
+    }, id);
+  });
+});
+
+var lastPostId = 0;
+
+DB.
+  getLastPostId().
+  then(function(id){
+    lastPostId = id;
+
+    setInterval(broadcastLatestPosts, Config.newLinkCheckIntervalSeconds);
+  }).
+  done();
+
+function broadcastLatestPosts(){
+  emitLatestPosts(function (eventName, data) {
+    IO.sockets.emit(eventName, data);
+  });
+}
+
+function emitLatestPosts(emitter, id) {
+  console.log("Getting latest posts since Post #", lastPostId);
+
+  DB.
+    latestPostsSinceLastPost(id || lastPostId, lastPostId).
+    then(function(posts){
+      if(posts.length){
+        console.log(posts.length, " new posts");
+
+        if(!id) {
+          lastPostId = posts[0].id;
+        }
+
+        emitter("newPosts", posts);
+      }
+    }).
+    fail(function(err){
+      console.log(err);
+    }).
+    finally(function(){
+      console.log("Finished checking for latest posts");
+    }).
+    done();
+}
