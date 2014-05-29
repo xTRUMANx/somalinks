@@ -9,7 +9,7 @@ var React = require("react"),
 
 var App = React.createClass({
   getInitialState: function(){
-    return {socket: ioClient.connect("/")};
+    return {socket: ioClient.connect("/", {"max reconnection attempts": Infinity})};
   },
   render: function(){
     return (
@@ -17,6 +17,7 @@ var App = React.createClass({
         <head>
           <title>somalinks</title>
           <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+          <link rel="stylesheet" type="text/css" href="/css/site.css" />
         </head>
         <body>
           <h1 className="text-center">somalinks</h1>

@@ -7,11 +7,13 @@ var express = require("express"),
   favicon = require("serve-favicon"),
   API = require("./api"),
   Config = require("./config"),
-  DB = require("./db");
+  DB = require("./db"),
+  compress = require("compression");
 
 var app = express();
 
 app.use(logger("dev"));
+app.use(compress());
 app.use(favicon(path.join(__dirname, "public/favicon.ico")));
 app.use(express.static(path.join(__dirname, "public")));
 

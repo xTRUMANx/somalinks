@@ -2,7 +2,8 @@
 
 var React = require("react"),
   ReactAsync = require("react-async"),
-  superagent = require("superagent");
+  superagent = require("superagent"),
+  ReactCSSTransitionGroup = require("react/lib/ReactCSSTransitionGroup");
 
 var Post = React.createClass({
   extractDomain: function(url){
@@ -42,7 +43,7 @@ var HomePage = React.createClass({
 
       var posts = JSON.parse(res.text);
 
-      cb(null, {posts: posts});
+      cb(null, {posts: posts, newPosts: []});
     });
   },
   componentWillMount: function(){
@@ -51,14 +52,25 @@ var HomePage = React.createClass({
     socket.on("newPosts", function(posts){
       if(!this.state.posts) return;
 
-      var newPosts = posts.concat(this.state.posts);
+      var newPosts = posts.concat(this.state.newPosts);
 
-      this.setState({posts: newPosts});
+       this.setState({newPosts: newPosts});
     }.bind(this));
 
     socket.on("reconnect", function(){
-      socket.emit("newPostsSince", this.state.posts[0].id);
+      var lastPostId = this.state.newPosts.length ? this.state.newPosts[0].id : this.state.posts[0].id;
+
+      socket.emit("newPostsSince", lastPostId);
     }.bind(this));
+
+    socket.on("reconnecting", function(){
+      socket.socket.reconnectionDelay = socket.socket.reconnectionDelay > 15000 ? 15000 : socket.socket.reconnectionDelay;
+    }.bind(this));
+  },
+  addNewPosts: function(){
+    var newPosts = this.state.newPosts.concat(this.state.posts);
+
+     this.setState({posts: newPosts, newPosts: []});
   },
   render: function(){
     var postNodes = this.state.posts.map(function(post){
@@ -71,8 +83,14 @@ var HomePage = React.createClass({
 
     return (
       <div>
+        <a className={"text-center clickable " + (this.state.newPosts.length ? "show" : "invisible")}
+          onClick={this.addNewPosts}>
+          {this.state.newPosts.length} new posts
+        </a>
         <ul className="list-unstyled">
-          {postNodes}
+          <ReactCSSTransitionGroup transitionName="fade">
+            {postNodes}
+          </ReactCSSTransitionGroup>
         </ul>
       </div>
       );
