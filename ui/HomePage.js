@@ -34,7 +34,7 @@ var Post = React.createClass({
       domainSansProtocol = this.extractDomain(this.props.post.data.url).domainSansProtocol;
 
     return (
-      <blockquote>
+      <blockquote className={this.props.post.isNew ? "newPost" : ""}>
         <a href={this.props.post.data.url}>{this.props.post.data.title}</a>
         <small>
           <a href={domainWithProtocol}>{domainSansProtocol}</a>
@@ -87,6 +87,9 @@ var HomePage = React.createClass({
     }.bind(this));
   },
   addNewPosts: function(){
+    this.state.posts.forEach(function(post){ post.isNew = false; });
+    this.state.newPosts.forEach(function(post){ post.isNew = true; });
+
     var newPosts = this.state.newPosts.concat(this.state.posts);
 
      this.setState({posts: newPosts, newPosts: []});

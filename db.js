@@ -70,11 +70,11 @@ var DB = {
       var sql, sqlArgs;
 
       if(fromId === toId) {
-        var sql = "select * from posts where id > $1 order by id desc limit 25";
+        var sql = "select * from posts where id > $1 order by id desc";
         sqlArgs = [fromId];
       }
       else{
-        var sql = "select * from posts where id > $1 and id <= $2 order by id desc limit 25";
+        var sql = "select * from posts where id > $1 and id <= $2 order by id desc";
         sqlArgs = [fromId, toId];
       }
 

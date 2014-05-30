@@ -2,6 +2,10 @@
     cursor: pointer;
 }
 
+blockquote.newPost {
+    border-left-color: #428bca;
+}
+
 .fade-enter {
     opacity: 0.01;
     transition: opacity .5s ease-in;
