@@ -9,7 +9,17 @@ var React = require("react"),
 
 var App = React.createClass({
   getInitialState: function(){
-    return {socket: ioClient.connect("/", {"max reconnection attempts": Infinity})};
+    var socket = ioClient.connect("/", {"max reconnection attempts": Infinity});
+
+    socket.on("connect", function(){
+      this.setState({isConnected: true});
+    }.bind(this));
+
+    socket.on("disconnect", function(){
+      this.setState({isConnected: false});
+    }.bind(this));
+
+    return {socket: socket};
   },
   render: function(){
     return (
@@ -23,7 +33,7 @@ var App = React.createClass({
           <h1 className="text-center">somalinks</h1>
           <div className="container">
             <Locations path={this.props.path}>
-              <Location path="/" handler={HomePage} apiEndpoints={this.props.apiEndpoints} socket={this.state.socket} />
+              <Location path="/" handler={HomePage} apiEndpoints={this.props.apiEndpoints} socket={this.state.socket} isConnected={this.state.isConnected} />
             </Locations>
           </div>
           <script src="/js/bundle.js"></script>

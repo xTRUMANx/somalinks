@@ -5,6 +5,17 @@ var React = require("react"),
   superagent = require("superagent"),
   ReactCSSTransitionGroup = require("react/lib/ReactCSSTransitionGroup");
 
+var ProgressBar = React.createClass({
+  render: function(){
+    return (
+      <div className="progress progress-striped active">
+        <div className="progress-bar" style={{width: '100%'}}>
+        </div>
+      </div>
+    );
+  }
+});
+
 var Post = React.createClass({
   extractDomain: function(url){
     var protocol = url.substr(0, url.indexOf("://") + 3);
@@ -57,6 +68,14 @@ var HomePage = React.createClass({
        this.setState({newPosts: newPosts});
     }.bind(this));
 
+    socket.on("morePosts", function(posts){
+      if(!this.state.posts) return;
+
+      var newPosts = this.state.posts.concat(posts);
+
+      this.setState({posts: newPosts, loadingMore: false});
+    }.bind(this));
+
     socket.on("reconnect", function(){
       var lastPostId = this.state.newPosts.length ? this.state.newPosts[0].id : this.state.posts[0].id;
 
@@ -71,6 +90,15 @@ var HomePage = React.createClass({
     var newPosts = this.state.newPosts.concat(this.state.posts);
 
      this.setState({posts: newPosts, newPosts: []});
+  },
+  loadMore: function(){
+    if(!this.state.posts.length) return;
+
+    this.setState({loadingMore: true});
+
+    var id = this.state.posts[this.state.posts.length - 1].id;
+
+    this.props.socket.emit("morePosts", id);
   },
   render: function(){
     var postNodes = this.state.posts.map(function(post){
@@ -87,11 +115,19 @@ var HomePage = React.createClass({
           onClick={this.addNewPosts}>
           {this.state.newPosts.length} new posts
         </a>
+        <p className={"text-center " + (this.props.isConnected ? "invisible" : "show")}>
+          Disconnected
+        </p>
         <ul className="list-unstyled">
           <ReactCSSTransitionGroup transitionName="fade">
             {postNodes}
           </ReactCSSTransitionGroup>
         </ul>
+        {!this.state.loadingMore ?
+          <button className="btn btn-primary center-block" onClick={this.loadMore} disabled={!this.props.isConnected}>
+            {this.props.isConnected ? "Load More" : "Disconnected"}
+          </button> :
+          <ProgressBar />}
       </div>
       );
   }

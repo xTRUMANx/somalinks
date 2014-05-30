@@ -91,6 +91,30 @@ var DB = {
     });
 
     return deferred.promise;
+  },
+  latestPostsAfterLastPost: function(id){
+    var deferred = Q.defer();
+
+    PG.connect(connectionString, function(err, client, done){
+      if(err){
+        return deferred.reject(err);
+      }
+
+      var sql = "select * from posts where id < $1 order by id desc limit 25;";
+
+      client.query(sql, [id], function(err, results){
+        done();
+
+        if(err){
+          deferred.reject(err);
+        }
+        else{
+          deferred.resolve(results.rows);
+        }
+      });
+    });
+
+    return deferred.promise;
   }
 };
 

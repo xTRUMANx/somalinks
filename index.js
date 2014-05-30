@@ -69,6 +69,22 @@ IO.sockets.on("connection", function(socket){
       socket.emit(eventName, data);
     }, id);
   });
+
+  socket.on("morePosts", function(id){
+    console.log("morePosts", id)
+    DB.
+      latestPostsAfterLastPost(id).
+      then(function(posts){
+        socket.emit("morePosts", posts);
+      }).
+      fail(function(err){
+        console.log(err);
+      }).
+      finally(function(){
+        console.log("Sent latests posts after Post#", id);
+      }).
+      done();
+  });
 });
 
 var lastPostId = 0;
