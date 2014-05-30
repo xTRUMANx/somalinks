@@ -3,7 +3,8 @@
 var React = require("react"),
   ReactAsync = require("react-async"),
   superagent = require("superagent"),
-  ReactCSSTransitionGroup = require("react/lib/ReactCSSTransitionGroup");
+  ReactCSSTransitionGroup = require("react/lib/ReactCSSTransitionGroup"),
+  moment = require("moment");
 
 var ProgressBar = React.createClass({
   render: function(){
@@ -37,7 +38,7 @@ var Post = React.createClass({
       <blockquote className={this.props.post.isNew ? "newPost" : ""}>
         <a href={this.props.post.data.url}>{this.props.post.data.title}</a>
         <small>
-          <a href={domainWithProtocol}>{domainSansProtocol}</a>
+          {moment(this.props.post.createdon).fromNow()} from <a href={domainWithProtocol}>{domainSansProtocol}</a>
         </small>
       </blockquote>
     );

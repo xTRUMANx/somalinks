@@ -23,7 +23,8 @@
     "pg": "~3.2.0",
     "q": "~1.0.1",
     "socket.io": "~0.9.17",
-    "socket.io-client": "~0.9.17"
+    "socket.io-client": "~0.9.17",
+    "moment": "~2.6.0"
   },
   "devDependencies": {
     "gulp": "~3.6.2",
