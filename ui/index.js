@@ -33,7 +33,8 @@ var App = React.createClass({
           <h1 className="text-center">somalinks</h1>
           <div className="container">
             <Locations path={this.props.path}>
-              <Location path="/" handler={HomePage} apiEndpoints={this.props.apiEndpoints} socket={this.state.socket} isConnected={this.state.isConnected} />
+              <Location path="/" handler={HomePage} apiEndpoints={this.props.apiEndpoints} socket={this.state.socket}
+                isConnected={this.state.isConnected} />
             </Locations>
           </div>
           <script src="/js/bundle.js"></script>

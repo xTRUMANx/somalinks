@@ -2,6 +2,23 @@
     cursor: pointer;
 }
 
+.masonry {
+    -moz-column-width: 18em;
+    -webkit-column-width: 18em;
+    -moz-column-gap: 1em;
+    -webkit-column-gap:1em;
+}
+
+.masonry-item {
+    display: inline-block;
+    padding:  .25rem;
+    width:  100%;
+}
+
+a:hover, a:focus {
+    text-decoration:none;
+}
+
 blockquote.newPost {
     border-left-color: #428bca;
 }

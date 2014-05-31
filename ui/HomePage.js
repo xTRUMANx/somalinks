@@ -18,29 +18,62 @@ var ProgressBar = React.createClass({
 });
 
 var Post = React.createClass({
-  extractDomain: function(url){
-    var protocol = url.substr(0, url.indexOf("://") + 3);
-
-    var urlSansProtocol = url.indexOf("://") > -1 ? url.substr(url.indexOf("://") + 3) : url;
-
-    var domain = urlSansProtocol.indexOf("/") == -1 ? urlSansProtocol : urlSansProtocol.substr(0, urlSansProtocol.indexOf("/"));
-
-    return {
-      domainSansProtocol: domain,
-      domainWithProtocol: protocol + domain
-    };
-  },
   render: function(){
-    var domainWithProtocol = this.extractDomain(this.props.post.data.url).domainWithProtocol,
-      domainSansProtocol = this.extractDomain(this.props.post.data.url).domainSansProtocol;
+    var post = this.props.post;
 
     return (
-      <blockquote className={this.props.post.isNew ? "newPost" : ""}>
-        <a href={this.props.post.data.url}>{this.props.post.data.title}</a>
+      <blockquote className={post.isNew ? "newPost" : ""}>
+        <a href={post.data.url}>{post.data.title}</a>
         <small>
-          {moment(this.props.post.createdon).fromNow()} from <a href={domainWithProtocol}>{domainSansProtocol}</a>
+          {moment(post.createdon).calendar()} from <a href={"http://" + post.data.host}>{post.data.host}</a>
         </small>
       </blockquote>
+    );
+  }
+});
+
+var PostsListing = React.createClass({
+  render: function(){
+    var postNodes = this.props.posts.map(function(post){
+      return (
+        <li key={post.id}>
+          <Post post={post} />
+        </li>
+        );
+    });
+
+    return (
+      <div>
+        <ul className="list-unstyled">
+          <ReactCSSTransitionGroup transitionName="fade">
+              {postNodes}
+          </ReactCSSTransitionGroup>
+        </ul>
+        {this.props.loadMore ? !this.props.loadingMore ?
+          <button className="btn btn-primary center-block" onClick={this.props.loadMore} disabled={!this.props.isConnected}>
+                {this.props.isConnected ? "Load More" : "Disconnected"}
+          </button> :
+          <ProgressBar /> : null}
+      </div>
+    );
+  }
+});
+
+var PostsGrid = React.createClass({
+  render: function(){
+
+    var postNodes = this.props.posts.map(function(post){
+      return (
+        <div className="masonry-item" key={post.id}>
+          <Post post={post} />
+        </div>
+        );
+    });
+
+    return (
+      <div className="masonry">
+        {postNodes}
+      </div>
     );
   }
 });
@@ -66,12 +99,10 @@ var HomePage = React.createClass({
 
       var newPosts = posts.concat(this.state.newPosts);
 
-       this.setState({newPosts: newPosts});
+      this.setState({newPosts: newPosts});
     }.bind(this));
 
     socket.on("morePosts", function(posts){
-      if(!this.state.posts) return;
-
       var newPosts = this.state.posts.concat(posts);
 
       this.setState({posts: newPosts, loadingMore: false});
@@ -93,7 +124,7 @@ var HomePage = React.createClass({
 
     var newPosts = this.state.newPosts.concat(this.state.posts);
 
-     this.setState({posts: newPosts, newPosts: []});
+    this.setState({posts: newPosts, newPosts: []});
   },
   loadMore: function(){
     if(!this.state.posts.length) return;
@@ -104,34 +135,34 @@ var HomePage = React.createClass({
 
     this.props.socket.emit("morePosts", id);
   },
+  toggleView: function(){
+    this.setState({showGrid: !this.state.showGrid});
+  },
   render: function(){
-    var postNodes = this.state.posts.map(function(post){
-      return (
-        <li key={post.id}>
-          <Post post={post} />
-        </li>
-      );
-    });
-
     return (
       <div>
-        <a className={"text-center clickable " + (this.state.newPosts.length ? "show" : "invisible")}
-          onClick={this.addNewPosts}>
-          {this.state.newPosts.length} new posts
-        </a>
-        <p className={"text-center " + (this.props.isConnected ? "invisible" : "show")}>
-          Disconnected
-        </p>
-        <ul className="list-unstyled">
-          <ReactCSSTransitionGroup transitionName="fade">
-            {postNodes}
-          </ReactCSSTransitionGroup>
-        </ul>
-        {!this.state.loadingMore ?
-          <button className="btn btn-primary center-block" onClick={this.loadMore} disabled={!this.props.isConnected}>
-            {this.props.isConnected ? "Load More" : "Disconnected"}
-          </button> :
-          <ProgressBar />}
+        <div className="row">
+          <div className="col-sm-4">
+            <a className={"clickable " + (this.state.newPosts.length ? "show" : "invisible")}
+              onClick={this.addNewPosts}>
+              {this.state.newPosts.length} new posts
+            </a>
+          </div>
+          <div className="col-sm-4">
+            <p className={"text-center " + (this.props.isConnected ? "invisible" : "show")}>
+            Disconnected
+            </p>
+          </div>
+          <div className="col-sm-4">
+            <button className="pull-right btn btn-primary" onClick={this.toggleView}>
+              <span className={this.state.showGrid ? "glyphicon glyphicon-list" : "glyphicon glyphicon-th-large"}></span>
+            </button>
+          </div>
+        </div>
+        {this.state.showGrid ?
+          <PostsGrid posts={this.state.posts} isConnected={this.props.isConnected} /> :
+          <PostsListing posts={this.state.posts} loadingMore={this.state.loadingMore} loadMore={this.loadMore} isConnected={this.props.isConnected} />
+        }
       </div>
       );
   }
