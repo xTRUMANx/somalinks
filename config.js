@@ -1,11 +1,15 @@
-var apiRootUrl = "http://localhost:3000/api";
+var util = require("util");
+
+var port = process.env.PORT || 3000;
+
+var apiRootUrl = util.format("http://localhost:%s/api", port);
 
 var apiEndpoints = {
   posts: apiRootUrl + "/posts"
 };
 
 var config = {
-  connectionString: "postgres://mustafa:mustafacrudgen@localhost/somalinks",
+  connectionString: process.env.DATABASE_URL || "postgres://mustafa:mustafacrudgen@localhost/somalinks",
   apiEndPoints: apiEndpoints,
   newLinkCheckIntervalSeconds: 30000
 };
