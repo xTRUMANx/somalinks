@@ -26991,7 +26991,7 @@ var Post = React.createClass({displayName: 'Post',
       React.DOM.blockquote( {className:post.isNew ? "newPost" : ""}, 
         React.DOM.a( {href:post.data.url}, post.data.title),
         React.DOM.small(null, 
-          moment(post.createdon).calendar(), " from ", React.DOM.a( {href:"http://" + post.data.host}, post.data.host)
+          moment.utc(post.createdon).zone(-180).calendar(), " Somali time from ", React.DOM.a( {href:"http://" + post.data.host}, post.data.host)
         )
       )
     );

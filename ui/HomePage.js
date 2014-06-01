@@ -25,7 +25,7 @@ var Post = React.createClass({
       <blockquote className={post.isNew ? "newPost" : ""}>
         <a href={post.data.url}>{post.data.title}</a>
         <small>
-          {moment(post.createdon).calendar()} from <a href={"http://" + post.data.host}>{post.data.host}</a>
+          {moment.utc(post.createdon).zone(-180).calendar()} Somali time from <a href={"http://" + post.data.host}>{post.data.host}</a>
         </small>
       </blockquote>
     );
