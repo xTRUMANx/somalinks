@@ -38,6 +38,7 @@ var App = React.createClass({
             </Locations>
           </div>
           <script src="/js/bundle.min.js"></script>
+          <script src="/js/ga.js"></script>
         </body>
       </html>
     );
