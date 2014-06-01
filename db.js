@@ -1,14 +1,26 @@
 var Q = require("q"),
   PG = require("pg"),
-  Config = require("./config");
+  Config = require("./config"),
+  url = require("url");
 
 var connectionString = Config.connectionString;
+
+var parsedConnectionString = url.parse(connectionString);
+
+var connectionConfig = {
+  user: parsedConnectionString.auth.split(":")[0],
+  password: parsedConnectionString.auth.split(":")[1],
+  database: parsedConnectionString.pathname.substr(1),
+  port: parsedConnectionString.port,
+  host: parsedConnectionString.hostname,
+  ssl: true
+};
 
 var DB = {
   getPosts: function(){
     var deferred = Q.defer();
 
-    PG.connect(connectionString, function(err, client, done){
+    PG.connect(connectionConfig, function(err, client, done){
       if(err){
         return deferred.reject(err);
       }
@@ -32,7 +44,7 @@ var DB = {
   getLastPostId: function(){
     var deferred = Q.defer();
 
-    PG.connect(connectionString, function(err, client, done){
+    PG.connect(connectionConfig, function(err, client, done){
       if(err){
         return deferred.reject(err);
       }
@@ -62,7 +74,7 @@ var DB = {
   latestPostsSinceLastPost: function(fromId, toId){
     var deferred = Q.defer();
 
-    PG.connect(connectionString, function(err, client, done){
+    PG.connect(connectionConfig, function(err, client, done){
       if(err){
         return deferred.reject(err);
       }
@@ -95,7 +107,7 @@ var DB = {
   latestPostsAfterLastPost: function(id){
     var deferred = Q.defer();
 
-    PG.connect(connectionString, function(err, client, done){
+    PG.connect(connectionConfig, function(err, client, done){
       if(err){
         return deferred.reject(err);
       }
