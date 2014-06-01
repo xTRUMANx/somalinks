@@ -37,7 +37,7 @@ var App = React.createClass({
                 isConnected={this.state.isConnected} />
             </Locations>
           </div>
-          <script src="/js/bundle.js"></script>
+          <script src="/js/bundle.min.js"></script>
         </body>
       </html>
     );

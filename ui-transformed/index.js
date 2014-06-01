@@ -37,7 +37,7 @@ var App = React.createClass({displayName: 'App',
                 isConnected:this.state.isConnected} )
             )
           ),
-          React.DOM.script( {src:"/js/bundle.js"})
+          React.DOM.script( {src:"/js/bundle.min.js"})
         )
       )
     );
