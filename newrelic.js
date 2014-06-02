@@ -20,10 +20,5 @@ exports.config = {
      * production applications.
      */
     level : 'trace'
-  },
-  rules : {
-    ignore : [
-      '^/socket.io/\*/xhr-polling/.*'
-    ]
   }
 };
