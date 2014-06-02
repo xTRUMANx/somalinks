@@ -24,7 +24,8 @@
     "q": "~1.0.1",
     "socket.io": "~0.9.17",
     "socket.io-client": "~0.9.17",
-    "moment": "~2.6.0"
+    "moment": "~2.6.0",
+    "newrelic": "~1.7.0"
   },
   "devDependencies": {
     "gulp": "~3.6.2",

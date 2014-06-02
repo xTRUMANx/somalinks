@@ -1,3 +1,4 @@
+require('newrelic');
 var express = require("express"),
   logger = require("morgan"),
   ReactAsync = require("react-async"),
