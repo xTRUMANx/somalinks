@@ -1,6 +1,3 @@
-var newrelic = require('newrelic');
-newrelic.addIgnoringRule('^/socket.io/\*/xhr-polling/.*');
-
 var express = require("express"),
   logger = require("morgan"),
   ReactAsync = require("react-async"),
