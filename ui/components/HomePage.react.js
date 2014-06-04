@@ -2,81 +2,10 @@
 
 var React = require("react"),
   ReactAsync = require("react-async"),
-  superagent = require("superagent"),
-  ReactCSSTransitionGroup = require("react/lib/ReactCSSTransitionGroup"),
-  moment = require("moment");
+  superagent = require("superagent");
 
-var ProgressBar = React.createClass({
-  render: function(){
-    return (
-      <div className="progress progress-striped active">
-        <div className="progress-bar" style={{width: '100%'}}>
-        </div>
-      </div>
-    );
-  }
-});
-
-var Post = React.createClass({
-  render: function(){
-    var post = this.props.post;
-
-    return (
-      <blockquote className={post.isNew ? "newPost" : ""}>
-        <a href={post.data.url}>{post.data.title}</a>
-        <small>
-          {moment.utc(post.createdon).zone(-180).calendar()} Somali time from <a href={"http://" + post.data.host}>{post.data.host}</a>
-        </small>
-      </blockquote>
-    );
-  }
-});
-
-var PostsListing = React.createClass({
-  render: function(){
-    var postNodes = this.props.posts.map(function(post){
-      return (
-        <li key={post.id}>
-          <Post post={post} />
-        </li>
-        );
-    });
-
-    return (
-      <div>
-        <ul className="list-unstyled">
-          <ReactCSSTransitionGroup transitionName="fade">
-              {postNodes}
-          </ReactCSSTransitionGroup>
-        </ul>
-        {this.props.loadMore ? !this.props.loadingMore ?
-          <button className="btn btn-primary center-block" onClick={this.props.loadMore} disabled={!this.props.isConnected}>
-                {this.props.isConnected ? "Load More" : "Disconnected"}
-          </button> :
-          <ProgressBar /> : null}
-      </div>
-    );
-  }
-});
-
-var PostsGrid = React.createClass({
-  render: function(){
-
-    var postNodes = this.props.posts.map(function(post){
-      return (
-        <div className="masonry-item" key={post.id}>
-          <Post post={post} />
-        </div>
-        );
-    });
-
-    return (
-      <div className="masonry">
-        {postNodes}
-      </div>
-    );
-  }
-});
+var PostsListing = require("./PostsListing"),
+  PostsGrid = require("./PostsGrid");
 
 var HomePage = React.createClass({
   mixins: [ReactAsync.Mixin],

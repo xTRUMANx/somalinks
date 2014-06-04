@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 
 var React = require("react"),
-  HomePage = require("./HomePage"),
+  HomePage = require("./components/HomePage"),
   Router = require("react-router-component"),
   Locations = Router.Locations,
   Location = Router.Location,
