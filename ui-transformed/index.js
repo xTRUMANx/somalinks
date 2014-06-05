@@ -77,10 +77,12 @@ var App = React.createClass({displayName: 'App',
     this.state.socket.emit("morePosts", id);
   },
   render: function(){
+    var title = this.state.newPosts.length ? this.state.newPosts.length + " somalinks" : "somalinks";
+
     return (
       React.DOM.html(null, 
         React.DOM.head(null, 
-          React.DOM.title(null, "somalinks"),
+          React.DOM.title(null, title),
           React.DOM.link( {rel:"stylesheet", type:"text/css", href:"/css/bootstrap.min.css"} ),
           React.DOM.link( {rel:"stylesheet", type:"text/css", href:"/css/site.css"} )
         ),
@@ -94,7 +96,7 @@ var App = React.createClass({displayName: 'App',
                 posts:this.state.posts, newPosts:this.state.newPosts} )
             )
           ),
-          React.DOM.script( {src:"/js/bundle.min.js"}),
+          React.DOM.script( {src:"/js/bundle.js"}),
           React.DOM.script( {src:"/js/ga.js"})
         )
       )

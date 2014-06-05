@@ -77,10 +77,12 @@ var App = React.createClass({
     this.state.socket.emit("morePosts", id);
   },
   render: function(){
+    var title = this.state.newPosts.length ? this.state.newPosts.length + " somalinks" : "somalinks";
+
     return (
       <html>
         <head>
-          <title>somalinks</title>
+          <title>{title}</title>
           <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
           <link rel="stylesheet" type="text/css" href="/css/site.css" />
         </head>
@@ -94,7 +96,7 @@ var App = React.createClass({
                 posts={this.state.posts} newPosts={this.state.newPosts} />
             </Locations>
           </div>
-          <script src="/js/bundle.min.js"></script>
+          <script src="/js/bundle.js"></script>
           <script src="/js/ga.js"></script>
         </body>
       </html>
