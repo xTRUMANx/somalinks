@@ -96,7 +96,7 @@ var App = React.createClass({
                 posts={this.state.posts} newPosts={this.state.newPosts} />
             </Locations>
           </div>
-          <script src="/js/bundle.js"></script>
+          <script src="/js/bundle.min.js"></script>
           <script src="/js/ga.js"></script>
         </body>
       </html>

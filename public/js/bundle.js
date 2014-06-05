@@ -27214,7 +27214,7 @@ var App = React.createClass({displayName: 'App',
                 posts:this.state.posts, newPosts:this.state.newPosts} )
             )
           ),
-          React.DOM.script( {src:"/js/bundle.js"}),
+          React.DOM.script( {src:"/js/bundle.min.js"}),
           React.DOM.script( {src:"/js/ga.js"})
         )
       )
