@@ -67,6 +67,9 @@ var AppStore = merge(EventEmitter.prototype, {
 
     this.emitChange();
   },
+  logPostClick: function(postId){
+    socket.emit("logPostClick", postId);
+  },
   emitChange: function(){
     this.emit(CHANGE_EVENT);
   },

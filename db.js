@@ -127,6 +127,25 @@ var DB = {
     });
 
     return deferred.promise;
+  },
+  logPostClick: function(id){
+    var deferred = Q.defer();
+
+    PG.connect(connectionConfig, function(err, client, done){
+      if(err){
+        return deferred.reject(err);
+      }
+
+      var sql = "update posts set clicks = clicks + 1 where id = $1";
+
+      client.query(sql, [id], function(err){
+        done();
+
+        err ? deferred.reject(err) : deferred.resolve();
+      });
+    });
+
+    return deferred.promise;
   }
 };
 

@@ -77,7 +77,6 @@ IO.sockets.on("connection", function(socket){
   });
 
   socket.on("morePosts", function(id){
-    console.log("morePosts", id)
     DB.
       latestPostsAfterLastPost(id).
       then(function(posts){
@@ -88,6 +87,18 @@ IO.sockets.on("connection", function(socket){
       }).
       finally(function(){
         console.log("Sent latests posts after Post#", id);
+      }).
+      done();
+  });
+
+  socket.on("logPostClick", function(id){
+    DB.
+      logPostClick(id).
+      then(function(){
+        console.log("logged click");
+      }).
+      fail(function(err){
+        console.log("click logging error: ", err)
       }).
       done();
   });
