@@ -27521,8 +27521,7 @@ var App = React.createClass({displayName: 'App',
             Locations( {path:this.props.path}, 
               Location( {path:"/", handler:HomePage} )
             )
-          ),
-          React.DOM.script( {src:"/js/ga.js"})
+          )
         )
       )
     );

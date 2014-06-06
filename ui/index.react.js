@@ -45,7 +45,6 @@ var App = React.createClass({
               <Location path="/" handler={HomePage} />
             </Locations>
           </div>
-          <script src="/js/ga.js"></script>
         </body>
       </html>
     );

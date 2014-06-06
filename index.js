@@ -35,13 +35,16 @@ app.use(function(req, res, next){
         return;
       }
 
-      var bundleFile = "bundle.min.js";
+      var scripts;
 
       if(app.get("env") === "development") {
-        bundleFile = "bundle.js";
+        scripts = ["/js/bundle.js"];
+      }
+      else{
+        scripts = ["/js/ga.js", "/js/bundle.min.js"];
       }
 
-      res.send(ReactAsync.injectIntoMarkup("<!doctype html>\n" + markup, data, ["/js/" + bundleFile]));
+      res.send(ReactAsync.injectIntoMarkup("<!doctype html>\n" + markup, data, scripts));
     }
   );
 });
