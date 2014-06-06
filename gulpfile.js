@@ -6,11 +6,16 @@ var gulp = require("gulp"),
 
 gulp.task("jsx-transform", function(){
   gulp.
-    src("./ui/**/*.react.js").
+    src("./ui/**/*.js").
     pipe(react()).
     pipe(rename(function(path){
-      var basename = path.basename.substr(0, path.basename.lastIndexOf(".react"));
-      path.basename = basename;
+      var indexOfReactPseudoExtension = path.basename.lastIndexOf(".react");
+
+      if(indexOfReactPseudoExtension > -1){
+        var basename = path.basename.substr(0, indexOfReactPseudoExtension);
+
+        path.basename = basename;
+      }
     })).
     pipe(gulp.dest("./ui-transformed"));
 });
@@ -27,7 +32,7 @@ gulp.task("bundle", ["jsx-transform"],function(){
 });
 
 gulp.task("watch", function(){
-  gulp.watch("./ui/*", ["jsx-transform", "bundle"]);
+  gulp.watch("./ui/**/*", ["jsx-transform", "bundle"]);
 });
 
 gulp.task("default", ["bundle", "watch"]);

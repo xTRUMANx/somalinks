@@ -28,14 +28,20 @@ app.use(function(req, res, next){
 
   ReactAsync.renderComponentToStringWithAsyncState(
     uiInstance,
-    function(err, markup){
+    function(err, markup, data){
       if(err){
         next(err);
 
         return;
       }
 
-      res.send("<!doctype html>\n" + markup);
+      var bundleFile = "bundle.min.js";
+
+      if(app.get("env") === "development") {
+        bundleFile = "bundle.js";
+      }
+
+      res.send(ReactAsync.injectIntoMarkup("<!doctype html>\n" + markup, data, ["/js/" + bundleFile]));
     }
   );
 });
