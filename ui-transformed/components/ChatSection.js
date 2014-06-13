@@ -34,8 +34,10 @@ var ChatSection = React.createClass({displayName: 'ChatSection',
     return false;
   },
   handleKeyDown: function(e){
-    if(e.charCode === 13 && !e.shiftKey){
+    if((e.charCode === 13 || e.charCode === 0) && !e.shiftKey){
       this.sendMessage();
+
+      return false;
     }
   },
   render: function(){
