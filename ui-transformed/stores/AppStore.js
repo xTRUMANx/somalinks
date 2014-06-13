@@ -7,7 +7,9 @@ var CHANGE_EVENT = "change",
   posts = [],
   newPosts = [],
   socketIOConnectionState = false,
-  loadingMore = false;
+  loadingMore = false,
+  connectionsCount = 1,
+  messages = [];
 
 if(typeof window !== "undefined") {
   var asyncState = window.__reactAsyncStatePacket[Object.keys(window.__reactAsyncStatePacket)[0]];
@@ -46,6 +48,9 @@ var AppStore = merge(EventEmitter.prototype, {
   isConnected: function(){
     return socketIOConnectionState;
   },
+  getConnectionsCount: function(){
+    return connectionsCount;
+  },
   addNewPosts: function(){
     posts.forEach(function(post){ post.isNew = false; });
     newPosts.forEach(function(post){ post.isNew = true; });
@@ -69,6 +74,18 @@ var AppStore = merge(EventEmitter.prototype, {
   },
   logPostClick: function(postId){
     socket.emit("logPostClick", postId);
+  },
+  sendMessage: function(message){
+    message.key = message.name + Date.now();
+
+    messages.unshift(message);
+
+    this.emitChange();
+
+    socket.emit("sendMessage", message);
+  },
+  getMessages: function(){
+    return messages;
   },
   emitChange: function(){
     this.emit(CHANGE_EVENT);
@@ -116,6 +133,20 @@ socket.on("reconnect", function(){
 
 socket.on("reconnecting", function(){
   socket.socket.reconnectionDelay = socket.socket.reconnectionDelay > 15000 ? 15000 : socket.socket.reconnectionDelay;
+});
+
+socket.on("connectionsCount", function(count){
+  connectionsCount = count;
+
+  AppStore.emitChange();
+});
+
+socket.on("newMessage", function(message){
+  message.key = message.name + Date.now();
+
+  messages.unshift(message);
+
+  AppStore.emitChange();
 });
 
 module.exports = AppStore;

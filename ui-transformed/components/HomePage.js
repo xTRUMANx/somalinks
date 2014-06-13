@@ -4,11 +4,23 @@ var React = require("react"),
   AppStore = require("../stores/AppStore");
 
 var PostsListing = require("./PostsListing"),
-  PostsGrid = require("./PostsGrid");
+  PostsGrid = require("./PostsGrid"),
+  ChatSection = require("./ChatSection");
+
+var UsersCount = React.createClass({displayName: 'UsersCount',
+  render: function(){
+    return (
+      React.DOM.div(null, 
+        this.props.count,
+        React.DOM.span( {className:"glyphicon glyphicon-user"})
+      )
+    );
+  }
+});
 
 var HomePage = React.createClass({displayName: 'HomePage',
   getInitialState: function(){
-    return {showGrid: false, newPosts: AppStore.getNewPosts()};
+    return {showGrid: false, newPosts: AppStore.getNewPosts(), connectionsCount: AppStore.getConnectionsCount() };
   },
   componentWillMount: function(){
     AppStore.addChangeListener(this.onChange);
@@ -17,7 +29,10 @@ var HomePage = React.createClass({displayName: 'HomePage',
     AppStore.removeChangeListener(this.onChange);
   },
   onChange: function(){
-    this.setState({newPosts: AppStore.getNewPosts()});
+    this.setState({
+      newPosts: AppStore.getNewPosts(),
+      connectionsCount: AppStore.getConnectionsCount()
+    });
   },
   toggleView: function(){
     this.setState({showGrid: !this.state.showGrid});
@@ -39,8 +54,8 @@ var HomePage = React.createClass({displayName: 'HomePage',
             )
           ),
           React.DOM.div( {className:"col-sm-4"}, 
-            React.DOM.p( {className:"text-center " + (this.isConnected() ? "invisible" : "show")}, 
-            "Disconnected"
+            React.DOM.p( {className:"text-center"}, 
+              this.isConnected() ? UsersCount( {count:this.state.connectionsCount} ) : "Disconnected" 
             )
           ),
           React.DOM.div( {className:"col-sm-4"}, 
@@ -49,10 +64,16 @@ var HomePage = React.createClass({displayName: 'HomePage',
             )
           )
         ),
-        this.state.showGrid ?
-          PostsGrid(null ) :
-          PostsListing(null )
-        
+        React.DOM.hr(null ),
+        React.DOM.div( {className:"row"}, 
+          React.DOM.div( {className:"col-sm-8"}, 
+            React.DOM.h2(null, "News"),
+            this.state.showGrid ? PostsGrid(null ) : PostsListing(null )
+          ),
+          React.DOM.div( {className:"col-sm-4"}, 
+            ChatSection(null )
+          )
+        )
       )
       );
   }

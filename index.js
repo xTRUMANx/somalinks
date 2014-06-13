@@ -70,7 +70,19 @@ var server = app.listen(app.get("port"), function(){
 
 var IO = require("socket.io").listen(server);
 
+var connectionsCount = 0;
+
 IO.sockets.on("connection", function(socket){
+  connectionsCount++;
+
+  IO.sockets.emit("connectionsCount", connectionsCount);
+
+  socket.on("disconnect", function(){
+    connectionsCount--;
+
+    IO.sockets.emit("connectionsCount", connectionsCount);
+  });
+
   socket.on("newPostsSince", function(id){
     console.log("newPostsSince", id);
     emitLatestPosts(function(eventName, data){
@@ -104,6 +116,10 @@ IO.sockets.on("connection", function(socket){
         console.log("click logging error: ", err)
       }).
       done();
+  });
+
+  socket.on("sendMessage", function(message){
+    socket.broadcast.emit("newMessage", message);
   });
 });
 

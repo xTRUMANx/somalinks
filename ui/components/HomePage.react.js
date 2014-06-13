@@ -4,11 +4,23 @@ var React = require("react"),
   AppStore = require("../stores/AppStore");
 
 var PostsListing = require("./PostsListing"),
-  PostsGrid = require("./PostsGrid");
+  PostsGrid = require("./PostsGrid"),
+  ChatSection = require("./ChatSection");
+
+var UsersCount = React.createClass({
+  render: function(){
+    return (
+      <div>
+        {this.props.count}
+        <span className="glyphicon glyphicon-user"></span>
+      </div>
+    );
+  }
+});
 
 var HomePage = React.createClass({
   getInitialState: function(){
-    return {showGrid: false, newPosts: AppStore.getNewPosts()};
+    return {showGrid: false, newPosts: AppStore.getNewPosts(), connectionsCount: AppStore.getConnectionsCount() };
   },
   componentWillMount: function(){
     AppStore.addChangeListener(this.onChange);
@@ -17,7 +29,10 @@ var HomePage = React.createClass({
     AppStore.removeChangeListener(this.onChange);
   },
   onChange: function(){
-    this.setState({newPosts: AppStore.getNewPosts()});
+    this.setState({
+      newPosts: AppStore.getNewPosts(),
+      connectionsCount: AppStore.getConnectionsCount()
+    });
   },
   toggleView: function(){
     this.setState({showGrid: !this.state.showGrid});
@@ -39,8 +54,8 @@ var HomePage = React.createClass({
             </a>
           </div>
           <div className="col-sm-4">
-            <p className={"text-center " + (this.isConnected() ? "invisible" : "show")}>
-            Disconnected
+            <p className="text-center">
+              {this.isConnected() ? <UsersCount count={this.state.connectionsCount} /> : "Disconnected" }
             </p>
           </div>
           <div className="col-sm-4">
@@ -49,10 +64,16 @@ var HomePage = React.createClass({
             </button>
           </div>
         </div>
-        {this.state.showGrid ?
-          <PostsGrid /> :
-          <PostsListing />
-        }
+        <hr />
+        <div className="row">
+          <div className="col-sm-8">
+            <h2>News</h2>
+            {this.state.showGrid ? <PostsGrid /> : <PostsListing />}
+          </div>
+          <div className="col-sm-4">
+            <ChatSection />
+          </div>
+        </div>
       </div>
       );
   }

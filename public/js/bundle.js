@@ -27272,14 +27272,15 @@ module.exports = function(arr, fn, initial){
 /** @jsx React.DOM */
 
 var React = require("react"),
+  moment = require("moment"),
   AppStore = require("../stores/AppStore");
 
-var PostsListing = require("./PostsListing"),
-  PostsGrid = require("./PostsGrid");
-
-var HomePage = React.createClass({displayName: 'HomePage',
+var ChatSection = React.createClass({displayName: 'ChatSection',
   getInitialState: function(){
-    return {showGrid: false, newPosts: AppStore.getNewPosts()};
+    return {
+      messages: AppStore.getMessages(),
+      isConnected: AppStore.isConnected()
+    };
   },
   componentWillMount: function(){
     AppStore.addChangeListener(this.onChange);
@@ -27288,7 +27289,107 @@ var HomePage = React.createClass({displayName: 'HomePage',
     AppStore.removeChangeListener(this.onChange);
   },
   onChange: function(){
-    this.setState({newPosts: AppStore.getNewPosts()});
+    this.setState({
+      messages: AppStore.getMessages(),
+      isConnected: AppStore.isConnected()
+    });
+  },
+  sendMessage: function(){
+    var name = this.refs.name.getDOMNode().value;
+    var message = this.refs.message.getDOMNode().value;
+
+    AppStore.sendMessage({name: name, text: message, sentOn: new Date()});
+
+    this.refs.message.getDOMNode().value = "";
+
+    return false;
+  },
+  handleKeyDown: function(e){
+    if(e.charCode === 13 && !e.shiftKey){
+      this.sendMessage();
+    }
+  },
+  render: function(){
+    var messageNodes = this.state.messages.map(function(message){
+      return (
+        React.DOM.li(null, 
+          React.DOM.blockquote(null, 
+          message.text.split("\n").map(function(text){return (React.DOM.p(null, text));}),
+            React.DOM.small(null, message.name, " said ", moment(message.sentOn).fromNow())
+          )
+        )
+      );
+    });
+
+    return (
+      React.DOM.div(null, 
+        React.DOM.h2(null, "Chat"),
+        React.DOM.form( {className:"form-horizontal", onSubmit:this.sendMessage}, 
+          React.DOM.div( {className:"form-group"}, 
+            React.DOM.label( {className:"control-label col-sm-3"}, "Name"),
+            React.DOM.div( {className:"col-sm-9"}, 
+              React.DOM.input( {className:"form-control", type:"text", required:true, ref:"name"} )
+            )
+          ),
+          React.DOM.div( {className:"form-group"}, 
+            React.DOM.label( {className:"control-label col-sm-3"}, "Message"),
+            React.DOM.div( {className:"col-sm-9"}, 
+              React.DOM.textarea( {className:"form-control", required:true, ref:"message", onKeyPress:this.handleKeyDown})
+            )
+          ),
+          React.DOM.div( {className:"form-group"}, 
+            React.DOM.div( {className:"col-sm-9 col-sm-offset-3"}, 
+              React.DOM.input( {className:"btn btn-primary", type:"submit", value:"Send", disabled:!this.state.isConnected} )
+            )
+          )
+        ),
+        React.DOM.hr(null ),
+        React.DOM.ul( {className:"list-unstyled"}, 
+          messageNodes
+        )
+      )
+    );
+  }
+});
+
+module.exports = ChatSection;
+
+},{"../stores/AppStore":178,"moment":3,"react":166}],172:[function(require,module,exports){
+/** @jsx React.DOM */
+
+var React = require("react"),
+  AppStore = require("../stores/AppStore");
+
+var PostsListing = require("./PostsListing"),
+  PostsGrid = require("./PostsGrid"),
+  ChatSection = require("./ChatSection");
+
+var UsersCount = React.createClass({displayName: 'UsersCount',
+  render: function(){
+    return (
+      React.DOM.div(null, 
+        this.props.count,
+        React.DOM.span( {className:"glyphicon glyphicon-user"})
+      )
+    );
+  }
+});
+
+var HomePage = React.createClass({displayName: 'HomePage',
+  getInitialState: function(){
+    return {showGrid: false, newPosts: AppStore.getNewPosts(), connectionsCount: AppStore.getConnectionsCount() };
+  },
+  componentWillMount: function(){
+    AppStore.addChangeListener(this.onChange);
+  },
+  componentWillUnmount: function(){
+    AppStore.removeChangeListener(this.onChange);
+  },
+  onChange: function(){
+    this.setState({
+      newPosts: AppStore.getNewPosts(),
+      connectionsCount: AppStore.getConnectionsCount()
+    });
   },
   toggleView: function(){
     this.setState({showGrid: !this.state.showGrid});
@@ -27310,8 +27411,8 @@ var HomePage = React.createClass({displayName: 'HomePage',
             )
           ),
           React.DOM.div( {className:"col-sm-4"}, 
-            React.DOM.p( {className:"text-center " + (this.isConnected() ? "invisible" : "show")}, 
-            "Disconnected"
+            React.DOM.p( {className:"text-center"}, 
+              this.isConnected() ? UsersCount( {count:this.state.connectionsCount} ) : "Disconnected" 
             )
           ),
           React.DOM.div( {className:"col-sm-4"}, 
@@ -27320,10 +27421,16 @@ var HomePage = React.createClass({displayName: 'HomePage',
             )
           )
         ),
-        this.state.showGrid ?
-          PostsGrid(null ) :
-          PostsListing(null )
-        
+        React.DOM.hr(null ),
+        React.DOM.div( {className:"row"}, 
+          React.DOM.div( {className:"col-sm-8"}, 
+            React.DOM.h2(null, "News"),
+            this.state.showGrid ? PostsGrid(null ) : PostsListing(null )
+          ),
+          React.DOM.div( {className:"col-sm-4"}, 
+            ChatSection(null )
+          )
+        )
       )
       );
   }
@@ -27331,7 +27438,7 @@ var HomePage = React.createClass({displayName: 'HomePage',
 
 module.exports = HomePage;
 
-},{"../stores/AppStore":177,"./PostsGrid":173,"./PostsListing":174,"react":166}],172:[function(require,module,exports){
+},{"../stores/AppStore":178,"./ChatSection":171,"./PostsGrid":174,"./PostsListing":175,"react":166}],173:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var React = require("react"),
@@ -27359,7 +27466,7 @@ var Post = React.createClass({displayName: 'Post',
 
 module.exports = Post;
 
-},{"../stores/AppStore":177,"moment":3,"react":166}],173:[function(require,module,exports){
+},{"../stores/AppStore":178,"moment":3,"react":166}],174:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var React = require("react"),
@@ -27399,7 +27506,7 @@ var PostsGrid = React.createClass({displayName: 'PostsGrid',
 
 module.exports = PostsGrid;
 
-},{"../stores/AppStore":177,"./Post":172,"react":166}],174:[function(require,module,exports){
+},{"../stores/AppStore":178,"./Post":173,"react":166}],175:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var React = require("react"),
@@ -27456,7 +27563,7 @@ var PostsListing = React.createClass({displayName: 'PostsListing',
 
 module.exports = PostsListing;
 
-},{"../stores/AppStore":177,"./Post":172,"./ProgressBar":175,"react":166,"react/lib/ReactCSSTransitionGroup":51}],175:[function(require,module,exports){
+},{"../stores/AppStore":178,"./Post":173,"./ProgressBar":176,"react":166,"react/lib/ReactCSSTransitionGroup":51}],176:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var React = require("react");
@@ -27474,7 +27581,7 @@ var ProgressBar = React.createClass({displayName: 'ProgressBar',
 
 module.exports = ProgressBar;
 
-},{"react":166}],176:[function(require,module,exports){
+},{"react":166}],177:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var React = require("react"),
@@ -27538,7 +27645,7 @@ if(typeof window !== "undefined"){
   window.React = React;
 }
 
-},{"./components/HomePage":171,"./stores/AppStore":177,"react":166,"react-async":4,"react-router-component":9}],177:[function(require,module,exports){
+},{"./components/HomePage":172,"./stores/AppStore":178,"react":166,"react-async":4,"react-router-component":9}],178:[function(require,module,exports){
 var EventEmitter = require("events").EventEmitter,
   merge = require("react/lib/merge"),
   superagent = require("superagent"),
@@ -27548,7 +27655,9 @@ var CHANGE_EVENT = "change",
   posts = [],
   newPosts = [],
   socketIOConnectionState = false,
-  loadingMore = false;
+  loadingMore = false,
+  connectionsCount = 1,
+  messages = [];
 
 if(typeof window !== "undefined") {
   var asyncState = window.__reactAsyncStatePacket[Object.keys(window.__reactAsyncStatePacket)[0]];
@@ -27587,6 +27696,9 @@ var AppStore = merge(EventEmitter.prototype, {
   isConnected: function(){
     return socketIOConnectionState;
   },
+  getConnectionsCount: function(){
+    return connectionsCount;
+  },
   addNewPosts: function(){
     posts.forEach(function(post){ post.isNew = false; });
     newPosts.forEach(function(post){ post.isNew = true; });
@@ -27610,6 +27722,18 @@ var AppStore = merge(EventEmitter.prototype, {
   },
   logPostClick: function(postId){
     socket.emit("logPostClick", postId);
+  },
+  sendMessage: function(message){
+    message.key = message.name + Date.now();
+
+    messages.unshift(message);
+
+    this.emitChange();
+
+    socket.emit("sendMessage", message);
+  },
+  getMessages: function(){
+    return messages;
   },
   emitChange: function(){
     this.emit(CHANGE_EVENT);
@@ -27659,6 +27783,20 @@ socket.on("reconnecting", function(){
   socket.socket.reconnectionDelay = socket.socket.reconnectionDelay > 15000 ? 15000 : socket.socket.reconnectionDelay;
 });
 
+socket.on("connectionsCount", function(count){
+  connectionsCount = count;
+
+  AppStore.emitChange();
+});
+
+socket.on("newMessage", function(message){
+  message.key = message.name + Date.now();
+
+  messages.unshift(message);
+
+  AppStore.emitChange();
+});
+
 module.exports = AppStore;
 
-},{"events":1,"react/lib/merge":152,"socket.io-client":167,"superagent":168}]},{},[176])
+},{"events":1,"react/lib/merge":152,"socket.io-client":167,"superagent":168}]},{},[177])
