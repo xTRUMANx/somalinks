@@ -43,9 +43,9 @@ var ChatSection = React.createClass({displayName: 'ChatSection',
   render: function(){
     var messageNodes = this.state.messages.map(function(message){
       return (
-        React.DOM.li(null, 
+        React.DOM.li( {key:message.key}, 
           React.DOM.blockquote(null, 
-          message.text.split("\n").map(function(text){return (React.DOM.p(null, text));}),
+            message.text.split("\n").map(function(text){return (React.DOM.p( {key:message.key}, text));}),
             React.DOM.small(null, message.name, " said ", moment(message.sentOn).fromNow())
           )
         )
