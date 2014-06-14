@@ -27,6 +27,8 @@ var ChatSection = React.createClass({displayName: 'ChatSection',
     var name = this.refs.name.getDOMNode().value;
     var message = this.refs.message.getDOMNode().value;
 
+    if(!name || !message) return false;
+
     AppStore.sendMessage({name: name, text: message, sentOn: new Date()});
 
     this.refs.message.getDOMNode().value = "";
@@ -34,7 +36,7 @@ var ChatSection = React.createClass({displayName: 'ChatSection',
     return false;
   },
   handleKeyDown: function(e){
-    if((e.charCode === 13 || e.charCode === 0) && !e.shiftKey){
+    if((e.charCode === 13 || e.which === 13) && !e.shiftKey){
       this.sendMessage();
 
       return false;
