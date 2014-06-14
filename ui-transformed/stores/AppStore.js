@@ -9,7 +9,8 @@ var CHANGE_EVENT = "change",
   socketIOConnectionState = false,
   loadingMore = false,
   connectionsCount = 1,
-  messages = [];
+  messages = [],
+  hasNewMessage = false;
 
 if(typeof window !== "undefined") {
   var asyncState = window.__reactAsyncStatePacket[Object.keys(window.__reactAsyncStatePacket)[0]];
@@ -87,6 +88,9 @@ var AppStore = merge(EventEmitter.prototype, {
   getMessages: function(){
     return messages;
   },
+  hasNewMessage: function(){
+    return hasNewMessage;
+  },
   emitChange: function(){
     this.emit(CHANGE_EVENT);
   },
@@ -142,7 +146,17 @@ socket.on("connectionsCount", function(count){
 });
 
 socket.on("newMessage", function(message){
-  message.key = message.name + Date.now();
+  if(!hasNewMessage){
+    hasNewMessage = true;
+
+    setTimeout(function(){
+      hasNewMessage = false;
+
+      AppStore.emitChange();
+    }, 5000);
+
+    AppStore.emitChange();
+  }
 
   messages.unshift(message);
 

@@ -10,7 +10,8 @@ var React = require("react"),
 
 var getState = function(){
   return {
-    newPosts: AppStore.getNewPosts()
+    newPosts: AppStore.getNewPosts(),
+    hasNewMessage: AppStore.hasNewMessage()
   };
 };
 
@@ -29,7 +30,14 @@ var App = React.createClass({displayName: 'App',
     this.setState(getState());
   },
   render: function(){
-    var title = this.state.newPosts.length ? this.state.newPosts.length + " somalinks" : "somalinks";
+    var title;
+
+    if(this.state.hasNewMessage){
+      title = "! somalinks";
+    }
+    else {
+      title = this.state.newPosts.length ? this.state.newPosts.length + " somalinks" : "somalinks";
+    }
 
     return (
       React.DOM.html(null, 

@@ -27596,7 +27596,8 @@ var React = require("react"),
 
 var getState = function(){
   return {
-    newPosts: AppStore.getNewPosts()
+    newPosts: AppStore.getNewPosts(),
+    hasNewMessage: AppStore.hasNewMessage()
   };
 };
 
@@ -27615,7 +27616,14 @@ var App = React.createClass({displayName: 'App',
     this.setState(getState());
   },
   render: function(){
-    var title = this.state.newPosts.length ? this.state.newPosts.length + " somalinks" : "somalinks";
+    var title;
+
+    if(this.state.hasNewMessage){
+      title = "! somalinks";
+    }
+    else {
+      title = this.state.newPosts.length ? this.state.newPosts.length + " somalinks" : "somalinks";
+    }
 
     return (
       React.DOM.html(null, 
@@ -27659,7 +27667,8 @@ var CHANGE_EVENT = "change",
   socketIOConnectionState = false,
   loadingMore = false,
   connectionsCount = 1,
-  messages = [];
+  messages = [],
+  hasNewMessage = false;
 
 if(typeof window !== "undefined") {
   var asyncState = window.__reactAsyncStatePacket[Object.keys(window.__reactAsyncStatePacket)[0]];
@@ -27737,6 +27746,9 @@ var AppStore = merge(EventEmitter.prototype, {
   getMessages: function(){
     return messages;
   },
+  hasNewMessage: function(){
+    return hasNewMessage;
+  },
   emitChange: function(){
     this.emit(CHANGE_EVENT);
   },
@@ -27792,7 +27804,17 @@ socket.on("connectionsCount", function(count){
 });
 
 socket.on("newMessage", function(message){
-  message.key = message.name + Date.now();
+  if(!hasNewMessage){
+    hasNewMessage = true;
+
+    setTimeout(function(){
+      hasNewMessage = false;
+
+      AppStore.emitChange();
+    }, 5000);
+
+    AppStore.emitChange();
+  }
 
   messages.unshift(message);
 
