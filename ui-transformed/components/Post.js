@@ -8,6 +8,11 @@ var React = require("react"),
 var Post = React.createClass({displayName: 'Post',
   handleClick: function(){
     AppStore.logPostClick(this.props.post.id);
+
+    // NOTE: ga is the google analytics variable
+    if(ga) {
+      ga('send', 'event', 'link', 'click', 'post');
+    }
   },
   render: function(){
     var post = this.props.post;
