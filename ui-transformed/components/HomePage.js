@@ -38,6 +38,11 @@ var HomePage = React.createClass({displayName: 'HomePage',
     this.setState({showGrid: !this.state.showGrid});
   },
   addNewPosts: function(){
+    // NOTE: ga is the google analytics variable
+    if(ga) {
+      ga('send', 'event', 'link', 'click', 'addNewPosts');
+    }
+
     AppStore.addNewPosts();
   },
   isConnected: function(){
